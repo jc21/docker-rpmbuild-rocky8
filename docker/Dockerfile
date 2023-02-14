@@ -31,11 +31,12 @@ RUN sed -i '/Defaults    requiretty/c\#Defaults    requiretty' /etc/sudoers
 RUN sed -i '/Defaults.*XAUTHORITY"/a Defaults    env_keep += "LANG HTTP_PROXY HTTPS_PROXY NO_PROXY http_proxy https_proxy no_proxy"' /etc/sudoers
 
 # Rpm User
-RUN adduser -G wheel rpmbuilder \
-	&& mkdir -p /home/rpmbuilder/rpmbuild/{BUILD,SPECS,SOURCES,BUILDROOT,RPMS,SRPMS,tmp} \
-	&& chmod -R 777 /home/rpmbuilder/rpmbuild
-
+RUN adduser -G wheel rpmbuilder
+RUN mkdir -p /home/rpmbuilder/rpmbuild/{BUILD,SPECS,SOURCES,BUILDROOT,RPMS,SRPMS,tmp}
+RUN chmod -R 777 /home/rpmbuilder/rpmbuild
 COPY .rpmmacros /home/rpmbuilder/
+RUN chown rpmbuilder:wheel /home/rpmbuilder/.rpmmacros
+
 USER rpmbuilder
 
 WORKDIR /home/rpmbuilder
