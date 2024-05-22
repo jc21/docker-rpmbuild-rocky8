@@ -1,23 +1,12 @@
 #!/bin/bash -e
 
+set -x
+
 RED='\E[1;31m'
 YELLOW='\E[1;33m'
 GREEN='\E[1;32m'
 BLUE='\E[1;34m'
 RESET='\E[0m'
-
-getopt --test > /dev/null
-if [[ $? -ne 4 ]]; then
-	echo -e "${BLUE}I’m sorry, 'getopt --test' failed in this environment.${RESET}"
-	exit 1
-fi
-
-
-# Enable devtools if variable is set and not empty
-if [ -n "$DEVTOOLS" ]; then
-	source /opt/rh/devtoolset-8/enable
-fi
-
 
 ##############################################
 # show_help                                  #
@@ -26,13 +15,13 @@ function show_help {
 	echo "Please specify the name of a spec package to build."
 	echo ""
 	echo "Usage: $0 [-r dependancy.rpm] /path/to/specfile [/path/to/specfile] [/path/to/specfile]"
-	echo "  -m      Disable yum fastest mirror plugin"
-	echo "  -u      Uninstalls specified yum package first"
-	echo "  -p      Installs specified yum package next"
+	echo "  -m      Disable dnf fastest mirror plugin"
+	echo "  -u      Uninstalls specified dnf package first"
+	echo "  -p      Installs specified dnf package next"
 	echo "  -r      Installs the specified RPM next"
 	echo "  -b      Skip broken packages in RPM install, only applies with -r and/or -p"
-	echo "  -o      Set yum to ignore obsoletes"
-	echo "  -n      Use yum with --nobest option"
+	echo "  -o      Set dnf to ignore obsoletes"
+	echo "  -n      Use dnf with --nobest option"
 	echo ""
 	echo "Example: $0 -r RPMS/x86_64/php.rpm -r RPMS/noarch/slack.rpm SPECS/php-memcache.spec"
 	echo ""
@@ -60,6 +49,11 @@ skip_broken=
 obsoletes=
 nomirror=
 nobest=
+
+# Enable devtools if variable is set and not empty
+if [ -n "$DEVTOOLS" ]; then
+	source /opt/rh/devtoolset-8/enable
+fi
 
 # now enjoy the options in order and nicely split until we see --
 while true; do
@@ -113,32 +107,36 @@ if [[ $# -eq 0 ]]; then
 	exit 1
 fi
 
-# Yum cleaning
-sudo yum clean all
+# dnf cleaning
+sudo dnf clean all
 sudo rm -rf /var/cache/yum
 
-## Disable yum mirror if specified
+## Disable dnf mirror if specified
 if [ -n "$nomirror" ]; then
-	echo -e "${YELLOW}❯ ${GREEN}Disabling Yum Fastest Mirror Plugin ...${RESET}"
+	echo -e "${YELLOW}❯ ${GREEN}Disabling dnf Fastest Mirror Plugin ...${RESET}"
 	sudo sed -i '/enabled=1/c\enabled=0' /etc/yum/pluginconf.d/fastestmirror.conf
 fi
 
 ## Uninstall PACKAGES
 if [ -n "$upackages" ]; then
-	echo -e "${YELLOW}❯ ${GREEN}Uninstalling Yum Packages ...${RESET}"
-	sudo yum -y erase $upackages
+	echo -e "${YELLOW}❯ ${GREEN}Uninstalling dnf Packages ...${RESET}"
+	sudo dnf -y erase $upackages
 fi
 
 ## Install PACKAGES
 if [ -n "$packages" ]; then
-	echo -e "${YELLOW}❯ ${GREEN}Installing Yum Packages ...${RESET}"
-	sudo yum -y $nobest $skip_broken $obsoletes install $packages
+	echo -e "${YELLOW}❯ ${GREEN}Installing dnf Packages ...${RESET}"
+	sudo dnf -y $nobest $skip_broken $obsoletes install $packages
 fi
 
 ## Install RPMS
 if [ -n "$rpmfiles" ]; then
-	echo -e "${YELLOW}❯ ${GREEN}Installing RPMs ...${RESET}"
-	sudo yum -y $nobest $skip_broken $obsoletes localinstall $rpmfiles
+	# count files
+	DEPCOUNT=$(ls -lq $rpmfiles | wc -l)
+	if [ "$DEPCOUNT" -gt 1 ]; then
+		echo -e "${YELLOW}❯ ${GREEN}Installing RPMs ...${RESET}"
+		sudo dnf -y $nobest $skip_broken $obsoletes localinstall $rpmfiles
+	fi
 fi
 
 ## Build Spec
