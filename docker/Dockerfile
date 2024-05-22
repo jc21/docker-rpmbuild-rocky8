@@ -5,17 +5,20 @@ LABEL maintainer="Jamie Curnow <jc@jc21.com>"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Yum
-RUN yum -y install epel-release drpm dnf-plugins-core \
+RUN dnf -y install --nobest --skip-broken \
+	epel-release \
+	drpm \
+	dnf-plugins-core \
 	&& dnf config-manager --set-enabled powertools \
-	&& yum localinstall -y https://yum.jc21.com/jc21-yum.rpm \
-	&& yum -y update \
-	&& yum -y install scl-utils scl-utils-build which mock git wget curl kernel-devel rpmdevtools rpmlint rpm-build sudo gcc-c++ make automake autoconf yum-utils scl-utils scl-utils-build cmake libtool expect \
-	&& yum -y install aspell-devel bzip2-devel chrpath cyrus-sasl-devel enchant-devel fastlz-devel fontconfig-devel freetype-devel gettext-devel gmp-devel \
+	&& dnf localinstall -y "https://yum.jc21.com/jc21-yum.rpm" \
+	&& dnf -y update \
+	&& dnf -y --allowerasing install scl-utils scl-utils-build which mock git wget curl kernel-devel rpmdevtools rpmlint rpm-build sudo gcc-c++ make automake autoconf yum-utils scl-utils scl-utils-build cmake libtool expect \
+	&& dnf -y install aspell-devel bzip2-devel chrpath cyrus-sasl-devel enchant-devel fastlz-devel fontconfig-devel freetype-devel gettext-devel gmp-devel \
 	httpd-devel krb5-devel libacl-devel libcurl-devel libdb-devel libedit-devel liberation-sans-fonts libevent-devel libgit2 libicu-devel libjpeg-turbo-devel libuuid-devel \
 	libmcrypt-devel libmemcached-devel libpng-devel libtiff-devel libtool-ltdl-devel libwebp-devel libX11-devel libXpm-devel libxml2-devel \
 	libxslt-devel memcached net-snmp-devel openldap-devel openssl-devel pam-devel pcre-devel perl-generators postgresql-devel recode-devel sqlite-devel \
 	systemd-devel systemtap-sdt-devel tokyocabinet-devel unixODBC-devel zlib-devel \
-	&& yum clean all \
+	&& dnf clean all \
 	&& rm -rf /var/cache/yum
 
 # build files

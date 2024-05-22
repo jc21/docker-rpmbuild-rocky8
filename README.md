@@ -29,23 +29,23 @@ Of course put your spec files in SPECS and your source files in SOURCES.
 If you want to build just one spec in particular:
 
 ```bash
-sudo docker run \
-    --name rpmbuild-rocky8 \
-    -v /path/to/your/rpmbuild:/home/rpmbuilder/rpmbuild \
-    --rm=true \
-    jc21/rpmbuild-rocky8 \
-    /bin/build-spec /home/rpmbuilder/rpmbuild/SPECS/something.spec
+docker run \
+  --name rpmbuild-rocky8 \
+  -v /path/to/your/rpmbuild:/home/rpmbuilder/rpmbuild \
+  --rm=true \
+  jc21/rpmbuild-rocky8 \
+  /bin/build-spec /home/rpmbuilder/rpmbuild/SPECS/something.spec
 ```
 
 Or if you want to build all specs in your SPECS folder:
 
 ```bash
-sudo docker run \
-    --name rpmbuild-rocky8 \
-    -v /path/to/your/rpmbuild:/home/rpmbuilder/rpmbuild \
-    --rm=true \
-    jc21/rpmbuild-rocky8 \
-    /bin/build-all
+docker run \
+  --name rpmbuild-rocky8 \
+  -v /path/to/your/rpmbuild:/home/rpmbuilder/rpmbuild \
+  --rm=true \
+  jc21/rpmbuild-rocky8 \
+  /bin/build-all
 ```
 
 The build-spec script will go to the trouble of installing any requires that the spec file needs to build.
@@ -63,17 +63,17 @@ SPEC=$1
 RPMBUILDROOT=/path/to/your/rpmbuild
 
 if [ "$1" == "" ]; then
-    echo "Usage: build.sh specfile.spec"
-    exit 1;
+  echo "Usage: build.sh specfile.spec"
+  exit 1;
 else
-    sudo docker run \
-        --name rpmbuild-rocky8 \
-        -v $RPMBUILDROOT:/home/rpmbuilder/rpmbuild \
-        --rm=true \
-        jc21/rpmbuild-rocky8 \
-        /bin/build-spec /home/rpmbuilder/rpmbuild/SPECS/$SPEC
+  docker run \
+    --name rpmbuild-rocky8 \
+    -v $RPMBUILDROOT:/home/rpmbuilder/rpmbuild \
+    --rm=true \
+    jc21/rpmbuild-rocky8 \
+    /bin/build-spec /home/rpmbuilder/rpmbuild/SPECS/$SPEC
 
-    exit $?
+  exit $?
 fi
 ```
 

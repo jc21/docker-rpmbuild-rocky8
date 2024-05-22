@@ -16,4 +16,3 @@ USER rpmbuilder
 RUN /tmp/install-rust.sh -y
 ENV PATH="/home/rpmbuilder/.cargo/bin:${PATH}"
 RUN rustup default nightly
-
