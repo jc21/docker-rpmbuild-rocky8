@@ -10,7 +10,7 @@ RUN dnf -y install --nobest --skip-broken \
 	drpm \
 	dnf-plugins-core \
 	&& dnf config-manager --set-enabled powertools \
-	&& dnf localinstall -y "https://yum.jc21.com/jc21-yum.rpm" \
+	&& dnf localinstall -y "https://yum.jc21.com/jc21.rpm" \
 	&& dnf -y update \
 	&& dnf -y --allowerasing install scl-utils scl-utils-build which mock git wget curl kernel-devel rpmdevtools rpmlint rpm-build sudo gcc-c++ make automake autoconf yum-utils scl-utils scl-utils-build cmake libtool expect \
 	&& dnf -y install aspell-devel bzip2-devel chrpath cyrus-sasl-devel enchant-devel fastlz-devel fontconfig-devel freetype-devel gettext-devel gmp-devel \

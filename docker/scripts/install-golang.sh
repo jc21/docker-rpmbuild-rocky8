@@ -10,7 +10,7 @@ dnf -y install jq wget
 echo 'Fetching rpm list ...'
 wget -O "$TMP_FILE" "https://yum.jc21.com/rpmdata.json?t=${UTIME}"
 
-RPMS=$(cat "$TMP_FILE" | jq '.[].repos[].rpms[] | select(.name | startswith("golang")) | "\(.filepath)/\(.filename)"' -r)
+RPMS=$(cat "$TMP_FILE" | jq '.[].repos[].rpms[] | select(.name | startswith("golang")) | "\(.filepath)/\(.filename)"' -r | grep el8)
 rm -rf "$TMP_FILE"
 rpmUrls=()
 while IFS= read -r line; do
